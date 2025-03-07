@@ -1,10 +1,11 @@
 import './App.css'
+import JsonForm from './components/JsonForm'
 import PersonalInformation from './components/PersonalInformation'
 
 function App() {
 
   return (
-      <PersonalInformation/>
+      <JsonForm/>
   )
 }
 
