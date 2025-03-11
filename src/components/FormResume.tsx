@@ -1,17 +1,19 @@
-import { useLocation } from "react-router-dom";
-
-interface FormData {
-  formData: string[];
-}
+import { useEffect, useState } from "react";
 
 const FormResume = () => {
-  const location = useLocation();
-  const { formData } = (location.state as FormData) || {};
+  const [formData, setFormData] = useState<string[]>([]);
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("formData");
+    if (storedData) {
+      setFormData(JSON.parse(storedData));
+    }
+  }, []);
 
   return (
     <div>
-      FormResume
-      {formData ? (
+      <h1>Form Resume</h1>
+      {formData.length > 0 ? (
         <ul>
           {formData.map((data, index) => (
             <li key={index}>{data}</li>

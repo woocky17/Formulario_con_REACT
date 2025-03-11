@@ -8,11 +8,11 @@ const JsonForm = () => {
   const [formData, setFormData] = useState<string[]>([]);
 
   useEffect(() => {
+    localStorage.setItem("formData", JSON.stringify(formData));
     if (form === 4) {
-      navigate("/resume", { state: { formData } });
+      navigate("/resume");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, navigate]);
+  }, [form, navigate, formData]);
 
   const nextForm = () => {
     setForm((current) => current + 1);
