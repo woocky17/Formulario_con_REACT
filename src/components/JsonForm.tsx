@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TextInput, Textarea, Select, Radio, Group } from "@mantine/core";
 import questions from "../assets/cuestionarios.json";
-import { TextoAnimado } from "./TextoAnimado";
 import { useState } from "react";
+import { InputAnimado, TextoAnimado } from "./animation";
 
 function InputTextGen(inputElement: any, indice: any) {
   const [value, setValue] = useState("");
@@ -33,25 +33,27 @@ function InputTextGen(inputElement: any, indice: any) {
           setError(null);
         }
       };
-      return (
+      return InputAnimado(
         <TextInput
           id={inputElement.id}
           label={TextoAnimado(inputElement.pregunta, indice)}
           onChange={handleChange}
           error={error}
-        />
+        />,
+        indice
       );
     }
     case "select":
-      return (
+      return InputAnimado(
         <Select
           id={inputElement.id}
           label={TextoAnimado(inputElement.pregunta, indice)}
           data={inputElement.opciones}
-        />
+        />,
+        indice
       );
     case "check":
-      return (
+      return InputAnimado(
         <Radio.Group
           name={inputElement.id}
           label={TextoAnimado(inputElement.pregunta, indice)}
@@ -61,14 +63,16 @@ function InputTextGen(inputElement: any, indice: any) {
               return <Radio value={element} label={element} />;
             })}
           </Group>
-        </Radio.Group>
+        </Radio.Group>,
+        indice
       );
     case "textarea":
-      return (
+      return InputAnimado(
         <Textarea
           id={inputElement.id}
           label={TextoAnimado(inputElement.pregunta, indice)}
-        />
+        />,
+        indice
       );
     default:
       break;
@@ -95,13 +99,8 @@ function formGen(form: any, key: any) {
 }
 
 const JsonForm = () => {
-  return (
-    <>
-      {questions.map((element, key) => {
-        return formGen(element, key);
-      })}
-    </>
-  );
+  questions.map(() => {});
+  return <>{formGen(questions[0], 0)};</>;
 };
 
 export default JsonForm;
