@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { text } from "framer-motion/client";
+import { ReactNode } from "react";
 
 export function TextoAnimado(texto: String, indice: any){
     return (
@@ -17,5 +18,19 @@ export function TextoAnimado(texto: String, indice: any){
       </h1>
     );
  };
+
+ export function InputAnimado(input: ReactNode , indice: any){
+
+    return (
+      <motion.span
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: indice*0.05}}>
+      
+      {input}
+      </motion.span>
+    )
+
+ }
 
   

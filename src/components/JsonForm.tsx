@@ -8,7 +8,6 @@ import {
   Group,
 } from "@mantine/core";
 import questions from "../assets/cuestionarios.json";
-import { TextoAnimado } from "./TextoAnimado";
 import {
   ReactElement,
   JSXElementConstructor,
@@ -16,6 +15,8 @@ import {
   ReactPortal,
   useState,
 } from "react";
+import { motion } from "framer-motion";
+import { InputAnimado,TextoAnimado } from "./animation";
 
 function inputTextGen(inputElement: any, indice: any) {
   const [value, setValue] = useState("");
@@ -35,23 +36,30 @@ function inputTextGen(inputElement: any, indice: any) {
         }
       };
       return (
-        <TextInput
-          id={inputElement.id}
-          label={TextoAnimado(inputElement.pregunta, indice)}
-          onChange={handleChange}
-          error={error}
-        />
+        InputAnimado((
+          <TextInput 
+            id={inputElement.id}
+            label={TextoAnimado(inputElement.pregunta, indice)}
+            onChange={handleChange}
+            error={error}
+          />
+        ), indice)
       );
     case "select":
       return (
+        InputAnimado((
+
         <Select
           id={inputElement.id}
           label={TextoAnimado(inputElement.pregunta, indice)}
           data={inputElement.opciones}
-        />
+        />        ), indice)
+
       );
     case "check":
       return (
+        InputAnimado((
+
         <Radio.Group
           name={inputElement.id}
           label={TextoAnimado(inputElement.pregunta, indice)}
@@ -61,14 +69,18 @@ function inputTextGen(inputElement: any, indice: any) {
               return <Radio value={element} label={element} />;
             })}
           </Group>
-        </Radio.Group>
+        </Radio.Group>        ), indice)
+
       );
     case "textarea":
       return (
+        InputAnimado((
+
         <Textarea
           id={inputElement.id}
           label={TextoAnimado(inputElement.pregunta, indice)}
-        />
+        />        ), indice)
+
       );
     default:
       break;
@@ -95,11 +107,13 @@ function formGen(form: any, key: any) {
 }
 
 const JsonForm = () => {
+  questions.map(element => {
+    
+  });
   return (
     <>
-      {questions.map((element, key) => {
-        return formGen(element, key);
-      })}
+       {formGen(questions[0], 0)};
+      
     </>
   );
 };
