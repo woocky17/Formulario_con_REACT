@@ -31,7 +31,7 @@ const WelcomePage = () => {
             ¡Bienvenido!
           </Title>
           <Text size="lg" mb="xl">
-            Comienzar con los formularios.
+            Comenzar con los formularios.
           </Text>
           <Button size="lg" variant="white" onClick={() => navigate("/form")}>
             Comenzar

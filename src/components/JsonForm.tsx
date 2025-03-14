@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TextInput, Textarea, Select, Radio, Group } from "@mantine/core";
+import { TextInput, Textarea, Select, Radio, Group, Button } from "@mantine/core";
 import questions from "../assets/cuestionarios.json";
 import { useState } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
@@ -100,7 +100,12 @@ function formGen(form: any, key: any) {
 
 const JsonForm = () => {
   questions.map(() => {});
-  return <>{formGen(questions[0], 0)};</>;
+  return <>
+    {formGen(questions[0], 0)}
+    <Button variant="filled" color="violet" size="md" radius="md">Siguiente</Button>
+  </>
+
+  //{error}
 };
 
 export default JsonForm;
