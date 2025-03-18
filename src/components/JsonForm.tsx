@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TextInput, Textarea, Select, Radio, Group, Button } from "@mantine/core";
+import { TextInput, Textarea, Select, Radio, Group, Button, Checkbox } from "@mantine/core";
 import questions from "../assets/cuestionarios.json";
 import { useState } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
@@ -7,22 +7,14 @@ import { useNavigate } from "react-router-dom";
 
 // TODO: Cargar los datos del localStorage si existen
 function InputTextGen({ inputElement, indice, handleInputChange, formErrors }: any) {
-  const [value, setValue] = useState("");
-  
-  const handleChange = (event: any) => {
-    const inputValue = event.target.value;
-    setValue(inputValue);
-    handleInputChange(inputElement.id, inputValue);
-  };
-
   const errorMessage = formErrors[inputElement.id] || null;
-
+  
   if (inputElement.tipo === "text") {
     return InputAnimado(
       <TextInput
         id={inputElement.id}
         label={TextoAnimado(inputElement.pregunta, indice)}
-        onChange={handleChange}
+        onChange={(event) => handleInputChange(inputElement.id, event.target.value)}
         error={errorMessage}
       />,
       indice
@@ -44,21 +36,41 @@ function InputTextGen({ inputElement, indice, handleInputChange, formErrors }: a
   }
 
   if (inputElement.tipo === "check") {
-    return InputAnimado(
-      <Radio.Group
-        name={inputElement.id}
-        label={TextoAnimado(inputElement.pregunta, indice)}
-        onChange={(value) => handleInputChange(inputElement.id, value)}
-        error={errorMessage}
-      >
-        <Group mt="xs">
-          {inputElement.opciones.map((element: any, i: number) => (
-            <Radio key={i} value={element} label={element} />
-          ))}
-        </Group>
-      </Radio.Group>,
-      indice
-    );
+    // Si se pueden seleccionar 2 opciones usamos Checkbox.Group, si no, usamos Radio.Group
+    if(inputElement.validacion && inputElement.validacion.max_seleccionados) {
+      return InputAnimado(
+        <Checkbox.Group
+          id={inputElement.id}
+          label={TextoAnimado(inputElement.pregunta, indice)}
+          onChange={(value) => handleInputChange(inputElement.id, value)}
+          error={errorMessage}
+        >
+          <Group mt="xs">
+            {inputElement.opciones.map((element: any, i: number) => (
+              <Checkbox key={i} value={element} label={element} />
+            ))}
+          </Group>
+        </Checkbox.Group>,
+        indice
+      );
+      
+    } else {
+      return InputAnimado(
+        <Radio.Group
+          name={inputElement.id}
+          label={TextoAnimado(inputElement.pregunta, indice)}
+          onChange={(value) => handleInputChange(inputElement.id, value)}
+          error={errorMessage}
+        >
+          <Group mt="xs">
+            {inputElement.opciones.map((element: any, i: number) => (
+              <Radio key={i} value={element} label={element} />
+            ))}
+          </Group>
+        </Radio.Group>,
+        indice
+      );
+    }
   }
 
   if (inputElement.tipo === "textarea") {
@@ -105,6 +117,7 @@ function formGen(form: any, key: any, handleInputChange: any, formErrors: any) {
   );
 }
 
+
 const JsonForm = () => {
   const [formData, setFormData] = useState<any>({});
   const [formErrors, setFormErrors] = useState<any>({});
@@ -118,27 +131,28 @@ const JsonForm = () => {
     }));
     setFormErrors((prevErrors: any) => ({
       ...prevErrors,
-      [id]: null, // Borra el error si el usuario corrige el campo
+      [id]: null, // Borra el error si el usuario vuelve a escribir en el input
     }));
   };
 
+
   const validateForm = () => {
-    let errors: any = {};
+    const errors: any = {};
     let isValid = true;
     const emailPattern = /^[a-zA-Z0-9._%+-]+@stucom\.com$/;
 
-    // Validamos cada campo del cuestionario
+    // Validamos cada campo del cuestionario actual
     questions[cuestionarioActual].preguntas.forEach((pregunta: any) => {
       const valor = formData[pregunta.id];
 
       if(pregunta.tipo === 'text' || pregunta.tipo === 'textarea') {
-        if(!valor || valor.length < pregunta.restricciones.min || valor.length > pregunta.restricciones.max) {
+        if(!valor || (pregunta.restricciones && (valor.length < pregunta.restricciones.min || valor.length > pregunta.restricciones.max))) {
           errors[pregunta.id] = `El campo debe tener entre ${pregunta.restricciones.min} y ${pregunta.restricciones.max} caracteres`;
           isValid = false;
-        } else if(pregunta.validacion && pregunta.validacion.min_edad && valor < pregunta.validacion.min_edad) {
+        } else if(pregunta.validacion?.min_edad && Number(valor) < pregunta.validacion.min_edad) {
           errors[pregunta.id] = `Debe ser mayor de ${pregunta.validacion.min_edad} años`;
           isValid = false;
-        } else if(pregunta.validacion && pregunta.validacion.formato && !emailPattern.test(valor)) {
+        } else if(pregunta.validacion?.formato === 'email' && !emailPattern.test(valor)) {
           errors[pregunta.id] = `Debe ingresar un email válido con dominio @stucom.com`;
           isValid = false;
         }
@@ -149,10 +163,15 @@ const JsonForm = () => {
         isValid = false;
       }
       
-      // TODO: Validar max_seleccionados
-      if(pregunta.tipo === 'check' && !valor) {
+      // Validación de checkboxes, como máximo 2 seleccionados!
+      if(pregunta.tipo === 'check' && (!valor || valor.length === 0)) { // checkboxes devuelven un array vacío si no hay ninguno seleccionado, y un array vacío es truthy en JS, por eso comprobamos el length
         errors[pregunta.id] = "Debe seleccionar una opción";
         isValid = false;
+      } else {
+        if(pregunta.validacion && pregunta.validacion.max_seleccionados && valor.length > pregunta.validacion.max_seleccionados) {
+          errors[pregunta.id] = `Debe seleccionar como máximo ${pregunta.validacion.max_seleccionados} opciones`;
+          isValid = false;
+        }
       }
     });
 
@@ -160,32 +179,22 @@ const JsonForm = () => {
     return isValid;
   };
 
+
   const handleSubmit = () => {
-    try {
-      if(!validateForm()) {
-        console.error("Error al validar el formulario");
-        return;
-      }
+    if(!validateForm()) return;
 
-      // Guardar los datos del formulario en localStorage
-      localStorage.setItem(`formData_${cuestionarioActual}`, JSON.stringify(formData));
-      console.log("Form data saved to localStorage:", formData);
+    // Guardar los datos del formulario en localStorage
+    localStorage.setItem(`formData_${cuestionarioActual}`, JSON.stringify(formData));
+    console.log("Form data saved to localStorage:", formData);
 
-      // Paso al siguiente cuestionario:
-      if(cuestionarioActual < questions.length - 1) {
-        console.log("setCuestionarioActual", cuestionarioActual + 1);
-        setCuestionarioActual(cuestionarioActual + 1);
-        setFormData({}); // Reset de los datos para el siguiente cuestionario
-      } else {
-        console.log("¡Cuestionarios completados!");
-        
-        // Redireccionar a la página de resumen
-        navigate("/resume");
-      }
-    } catch (error) {
-        console.error("Error al guardar el formulario:", error);
+    // Paso al siguiente cuestionario:
+    if(cuestionarioActual < questions.length - 1) {
+      setCuestionarioActual(cuestionarioActual + 1);
+      setFormData({}); // Reset de los datos para el siguiente cuestionario
+    } else {
+      console.log("¡Cuestionarios completados!");
+      navigate("/resume"); // Redirecciona a la página de resumen
     }
-
   };
 
 
