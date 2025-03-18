@@ -1,7 +1,11 @@
+import { Container, List, ThemeIcon } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { IconCircleCheck } from "@tabler/icons-react";
+import questions from "../assets/cuestionarios.json";
 
 const FormResume = () => {
-  const [formData, setFormData] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [formData, setFormData] = useState<any[]>([]);
 
   useEffect(() => {
     const storedData = localStorage.getItem("formData");
@@ -14,13 +18,36 @@ const FormResume = () => {
     <div>
       <h1>Form Resume</h1>
       {formData.length > 0 ? (
-        <ul>
-          {formData.map((data, index) => (
-            <li key={index}>{data}</li>
+        <Container>
+          {questions.map((form, index) => (
+            <div key={index}>
+              <h2>{form.titulo}</h2>
+              {formData.map((formItem, formIndex) => (
+                <div key={formIndex} className="form-item">
+                  <List
+                    spacing="xs"
+                    size="sm"
+                    center
+                    icon={
+                      <ThemeIcon color="teal" size={24} radius="xl">
+                        <IconCircleCheck size={16} />
+                      </ThemeIcon>
+                    }
+                  >
+                    {Object.entries(formItem).map(([key, value]) => (
+                      <List.Item key={key}>
+                        <strong>{key}</strong>
+                        {value as string}
+                      </List.Item>
+                    ))}
+                  </List>
+                </div>
+              ))}
+            </div>
           ))}
-        </ul>
+        </Container>
       ) : (
-        <p>No data available</p>
+        <p>No hay datos de formulario guardados.</p>
       )}
     </div>
   );
