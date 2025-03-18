@@ -28,7 +28,6 @@ import { Footer } from "./components/Footer";
 function App() {
 
   const { t, i18n } = useTranslation();  // Accedemos a la función `t` para traducir
-  const [resultat, setResultat] = useState<number>(0);  // Definimos `resultat` con tipo `number`
 
 
   const handleLanguageChange = (checked: boolean) => {
