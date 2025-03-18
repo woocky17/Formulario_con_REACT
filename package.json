@@ -20,8 +20,7 @@
     "i18next-browser-languagedetector": "^8.0.4",
     "i18next-http-backend": "^3.0.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-i18next": "^15.4.1"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
