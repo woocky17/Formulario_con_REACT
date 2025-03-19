@@ -1,6 +1,5 @@
 import { Container, List, ThemeIcon } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { IconCircleCheck } from "@tabler/icons-react";
 import questions from "../assets/cuestionarios.json";
 
 const FormResume = () => {
@@ -30,7 +29,6 @@ const FormResume = () => {
                     center
                     icon={
                       <ThemeIcon color="teal" size={24} radius="xl">
-                        <IconCircleCheck size={16} />
                       </ThemeIcon>
                     }
                   >
