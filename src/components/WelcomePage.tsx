@@ -1,44 +1,78 @@
-import { Button, Container, Title, Text, Paper } from "@mantine/core";
+import { Button, Container, Title, Text, Paper, List } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import { IconCheck } from "@tabler/icons-react";
 
-const WelcomePage = () => {
+interface WelcomePageProps {
+  language: string;
+}
+
+const WelcomePage = ({ language }: WelcomePageProps) => {
   const navigate = useNavigate();
 
+  const texts = {
+    es: {
+      welcome: "Bienvenido",
+      description:
+        "Esta aplicación te permite completar una serie de cuestionarios sobre diferentes temas.",
+      startButton: "Comenzar",
+    },
+    en: {
+      welcome: "Welcome",
+      description:
+        "This application allows you to complete a series of questionnaires on different topics.",
+      startButton: "Start",
+    },
+  };
+
+  const t = language === "en" ? texts.en : texts.es;
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #667eea, #764ba2)",
-        color: "white",
-      }}
-    >
-      <Container size="sm">
-        <Paper
-          shadow="xl"
-          p="xl"
-          radius="md"
+    <Container size="md">
+      <Paper
+        shadow="md"
+        p="xl"
+        radius="md"
+        style={{
+          backgroundColor: "white",
+          padding: "40px",
+        }}
+      >
+        <div
           style={{
-            textAlign: "center",
-            backgroundColor: "rgba(255, 255, 255, 0.15)",
-            backdropFilter: "blur(10px)",
-            padding: "40px",
+            display: "flex",
+            alignItems: "center",
+            gap: "2rem",
+            marginBottom: "2rem",
           }}
         >
-          <Title order={1} mb="sm">
-            ¡Bienvenido!
-          </Title>
-          <Text size="lg" mb="xl">
-            Comenzar con los formularios.
-          </Text>
-          <Button size="lg" variant="white" onClick={() => navigate("/form")}>
-            Comenzar
-          </Button>
-        </Paper>
-      </Container>
-    </div>
+          <div>
+            <Title order={1} mb="md" style={{ color: "#764ba2" }}>
+              {t.welcome}
+            </Title>
+            <Text size="lg" mb="xl">
+              {t.description}
+            </Text>
+          </div>
+        </div>
+
+        <List
+          spacing="sm"
+          size="md"
+          center
+          icon={<IconCheck style={{ color: "#764ba2" }} />}
+          mb="xl"
+        ></List>
+
+        <Button
+          size="lg"
+          variant="gradient"
+          gradient={{ from: "#667eea", to: "#764ba2" }}
+          onClick={() => navigate("/form")}
+        >
+          {t.startButton}
+        </Button>
+      </Paper>
+    </Container>
   );
 };
 

@@ -1,0 +1,42 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.main-content {
+  flex: 1;
+  background-color: #f8f9fa;
+  padding: 2rem 0;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+p, span, div {
+  font-family: 'Open Sans', sans-serif;
+}
+
+label {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+}
+
+input, textarea, select {
+  font-family: 'Open Sans', sans-serif;
+}
+
+button {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+}
+
+.error-message {
+  font-family: 'Roboto', sans-serif;
+  color: #e53935;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
