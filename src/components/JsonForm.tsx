@@ -1,21 +1,96 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TextInput, Textarea, Select, Radio, Group, Button, Checkbox } from "@mantine/core";
+import {
+  TextInput,
+  Textarea,
+  Select,
+  Radio,
+  Checkbox,
+  Group,
+  Button,
+  Paper,
+  Title,
+  Text,
+  Alert,
+  Progress,
+} from "@mantine/core";
 import questions from "../assets/cuestionarios.json";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
 import { useNavigate } from "react-router-dom";
+import { IconAlertCircle } from "@tabler/icons-react";
 
-// TODO: Cargar los datos del localStorage si existen
-function InputTextGen({ inputElement, indice, handleInputChange, formErrors }: any) {
+interface FormQuestion {
+  id: string;
+  tipo: string;
+  pregunta: string;
+  respuesta: string | string[];
+  opciones?: string[];
+  restricciones?: {
+    min: number;
+    max: number;
+  };
+  validacion?: {
+    min_edad?: number;
+    formato?: string;
+    dominio?: string;
+    max_seleccionados?: number;
+  };
+}
+
+interface FormItem {
+  cuestionario: number;
+  [key: string]: string | string[] | number;
+}
+
+interface FormData {
+  [key: string]: string | string[] | number;
+}
+
+interface JsonFormProps {
+  language: string;
+  formData: FormItem[];
+  setFormData: React.Dispatch<React.SetStateAction<FormItem[]>>;
+}
+
+function InputTextGen({
+  inputElement,
+  indice,
+  handleInputChange,
+  formErrors,
+  currentValue,
+  language,
+}: {
+  inputElement: FormQuestion;
+  indice: number;
+  handleInputChange: (id: string, value: any) => void;
+  formErrors: Record<string, string>;
+  currentValue: any;
+  language: string;
+}) {
   const errorMessage = formErrors[inputElement.id] || null;
-  
+
+  const texts = {
+    es: {
+      selectPlaceholder: "Selecciona una opción",
+    },
+    en: {
+      selectPlaceholder: "Select an option",
+    },
+  };
+
+  const t = language === "en" ? texts.en : texts.es;
+
   if (inputElement.tipo === "text") {
     return InputAnimado(
       <TextInput
         id={inputElement.id}
         label={TextoAnimado(inputElement.pregunta, indice)}
-        onChange={(event) => handleInputChange(inputElement.id, event.target.value)}
+        onChange={(event) =>
+          handleInputChange(inputElement.id, event.target.value)
+        }
         error={errorMessage}
+        value={currentValue || ""}
+        required
       />,
       indice
     );
@@ -26,51 +101,60 @@ function InputTextGen({ inputElement, indice, handleInputChange, formErrors }: a
       <Select
         id={inputElement.id}
         label={TextoAnimado(inputElement.pregunta, indice)}
-        data={inputElement.opciones}
-        comboboxProps={{ transitionProps: { transition: "pop", duration: 200 } }}
-        onChange={(value) => handleInputChange(inputElement.id, value)}
+        data={inputElement.opciones || []}
+        comboboxProps={{
+          transitionProps: { transition: "pop", duration: 200 },
+        }}
+        onChange={(value) => handleInputChange(inputElement.id, value || "")}
         error={errorMessage}
+        value={currentValue || null}
+        placeholder={t.selectPlaceholder}
+        required
       />,
       indice
     );
   }
 
   if (inputElement.tipo === "check") {
-    // Si se pueden seleccionar 2 opciones usamos Checkbox.Group, si no, usamos Radio.Group
-    if(inputElement.validacion && inputElement.validacion.max_seleccionados) {
+    if (
+      inputElement.validacion?.max_seleccionados &&
+      inputElement.validacion.max_seleccionados > 1
+    ) {
       return InputAnimado(
         <Checkbox.Group
-          id={inputElement.id}
-          label={TextoAnimado(inputElement.pregunta, indice)}
+          value={Array.isArray(currentValue) ? currentValue : []}
           onChange={(value) => handleInputChange(inputElement.id, value)}
+          label={TextoAnimado(inputElement.pregunta, indice)}
           error={errorMessage}
+          required
         >
           <Group mt="xs">
-            {inputElement.opciones.map((element: any, i: number) => (
-              <Checkbox key={i} value={element} label={element} />
+            {(inputElement.opciones || []).map((option, i) => (
+              <Checkbox key={i} value={option} label={option} />
             ))}
           </Group>
         </Checkbox.Group>,
         indice
       );
-      
-    } else {
-      return InputAnimado(
-        <Radio.Group
-          name={inputElement.id}
-          label={TextoAnimado(inputElement.pregunta, indice)}
-          onChange={(value) => handleInputChange(inputElement.id, value)}
-          error={errorMessage}
-        >
-          <Group mt="xs">
-            {inputElement.opciones.map((element: any, i: number) => (
-              <Radio key={i} value={element} label={element} />
-            ))}
-          </Group>
-        </Radio.Group>,
-        indice
-      );
     }
+
+    return InputAnimado(
+      <Radio.Group
+        name={inputElement.id}
+        label={TextoAnimado(inputElement.pregunta, indice)}
+        onChange={(value) => handleInputChange(inputElement.id, value)}
+        error={errorMessage}
+        value={currentValue || ""}
+        required
+      >
+        <Group mt="xs">
+          {(inputElement.opciones || []).map((element, i) => (
+            <Radio key={i} value={element} label={element} />
+          ))}
+        </Group>
+      </Radio.Group>,
+      indice
+    );
   }
 
   if (inputElement.tipo === "textarea") {
@@ -78,8 +162,13 @@ function InputTextGen({ inputElement, indice, handleInputChange, formErrors }: a
       <Textarea
         id={inputElement.id}
         label={TextoAnimado(inputElement.pregunta, indice)}
-        onChange={(event) => handleInputChange(inputElement.id, event.target.value)}
+        onChange={(event) =>
+          handleInputChange(inputElement.id, event.target.value)
+        }
         error={errorMessage}
+        value={currentValue || ""}
+        minRows={4}
+        required
       />,
       indice
     );
@@ -92,17 +181,29 @@ function InputTextGen({ inputElement, indice, handleInputChange, formErrors }: a
   );
 }
 
-
-
-function formGen(form: any, key: any, handleInputChange: any, formErrors: any) {
+function FormGenerator({
+  form,
+  handleInputChange,
+  formErrors,
+  formData,
+  language,
+}: {
+  form: any;
+  handleInputChange: (id: string, value: any) => void;
+  formErrors: Record<string, string>;
+  formData: FormData;
+  language: string;
+}) {
   let indice = 0;
+
   return (
-    <form key={key}>
-      <h1>{form.titulo}</h1>
-      {form.preguntas.map((element: any) => {
+    <Paper shadow="sm" p="xl" radius="md" withBorder mb="xl">
+      <Title order={2} mb="lg" style={{ color: "#764ba2" }}>
+        {form.titulo}
+      </Title>
+      {form.preguntas.map((element: FormQuestion) => {
         const indiceTemp = indice;
         indice = indice + element.pregunta.length;
-        // return <>{InputTextGen(element, indiceTemp, handleInputChange)}</>;
         return (
           <InputTextGen
             key={element.id}
@@ -110,99 +211,237 @@ function formGen(form: any, key: any, handleInputChange: any, formErrors: any) {
             indice={indiceTemp}
             handleInputChange={handleInputChange}
             formErrors={formErrors}
+            currentValue={formData[element.id]}
+            language={language}
           />
         );
       })}
-    </form>
+    </Paper>
   );
 }
 
-
-const JsonForm = () => {
-  const [formData, setFormData] = useState<any>({});
-  const [formErrors, setFormErrors] = useState<any>({});
+const JsonForm = ({
+  language,
+  formData: existingFormData,
+  setFormData: setExistingFormData,
+}: JsonFormProps) => {
+  const [currentFormData, setCurrentFormData] = useState<FormData>({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [cuestionarioActual, setCuestionarioActual] = useState(0);
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const texts = {
+    es: {
+      next: "Siguiente",
+      finish: "Finalizar",
+      formError: "Por favor, corrige los errores antes de continuar.",
+      progress: "Progreso",
+      lengthError: "El campo debe tener entre {min} y {max} caracteres",
+      ageError: "Debe ser mayor de {age} años",
+      emailError: "Debe ingresar un email válido con dominio @{domain}",
+      selectError: "Debe seleccionar una opción",
+      maxSelectionsError: "Debe seleccionar máximo {max} opciones",
+      minSelectionsError: "Debe seleccionar al menos una opción",
+    },
+    en: {
+      next: "Next",
+      finish: "Finish",
+      formError: "Please correct the errors before continuing.",
+      progress: "Progress",
+      lengthError: "Field must be between {min} and {max} characters",
+      ageError: "You must be older than {age} years",
+      emailError: "You must enter a valid email with domain @{domain}",
+      selectError: "You must select an option",
+      maxSelectionsError: "You must select maximum {max} options",
+      minSelectionsError: "You must select at least one option",
+    },
+  };
+
+  const t = language === "en" ? texts.en : texts.es;
+
+  useEffect(() => {
+    if (existingFormData && existingFormData[cuestionarioActual]) {
+      setCurrentFormData(existingFormData[cuestionarioActual]);
+    } else {
+      setCurrentFormData({});
+    }
+  }, [cuestionarioActual, existingFormData]);
+
   const handleInputChange = (id: string, value: any) => {
-    setFormData((prevData: any) => ({
+    setCurrentFormData((prevData) => ({
       ...prevData,
       [id]: value,
     }));
-    setFormErrors((prevErrors: any) => ({
-      ...prevErrors,
-      [id]: null, // Borra el error si el usuario vuelve a escribir en el input
-    }));
+
+    if (formErrors[id]) {
+      setFormErrors((prevErrors) => {
+        const newErrors = { ...prevErrors };
+        delete newErrors[id];
+        return newErrors;
+      });
+    }
+
+    if (generalError) {
+      setGeneralError(null);
+    }
   };
 
-
   const validateForm = () => {
-    const errors: any = {};
+    const errors: Record<string, string> = {};
     let isValid = true;
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@stucom\.com$/;
 
-    // Validamos cada campo del cuestionario actual
-    questions[cuestionarioActual].preguntas.forEach((pregunta: any) => {
-      const valor = formData[pregunta.id];
+    const currentForm = questions[cuestionarioActual];
 
-      if(pregunta.tipo === 'text' || pregunta.tipo === 'textarea') {
-        if(!valor || (pregunta.restricciones && (valor.length < pregunta.restricciones.min || valor.length > pregunta.restricciones.max))) {
-          errors[pregunta.id] = `El campo debe tener entre ${pregunta.restricciones.min} y ${pregunta.restricciones.max} caracteres`;
+    currentForm.preguntas.forEach((pregunta: FormQuestion) => {
+      const valor = currentFormData[pregunta.id];
+
+      if (
+        valor === undefined ||
+        valor === null ||
+        valor === "" ||
+        (Array.isArray(valor) && valor.length === 0)
+      ) {
+        errors[pregunta.id] = t.selectError;
+        isValid = false;
+        return;
+      }
+
+      if (
+        (pregunta.tipo === "text" || pregunta.tipo === "textarea") &&
+        typeof valor === "string"
+      ) {
+        if (pregunta.restricciones) {
+          if (
+            valor.length < pregunta.restricciones.min ||
+            valor.length > pregunta.restricciones.max
+          ) {
+            errors[pregunta.id] = t.lengthError
+              .replace("{min}", pregunta.restricciones.min.toString())
+              .replace("{max}", pregunta.restricciones.max.toString());
+            isValid = false;
+          }
+        }
+
+        if (
+          pregunta.validacion?.min_edad &&
+          parseInt(valor) < pregunta.validacion.min_edad
+        ) {
+          errors[pregunta.id] = t.ageError.replace(
+            "{age}",
+            pregunta.validacion.min_edad.toString()
+          );
           isValid = false;
-        } else if(pregunta.validacion?.min_edad && Number(valor) < pregunta.validacion.min_edad) {
-          errors[pregunta.id] = `Debe ser mayor de ${pregunta.validacion.min_edad} años`;
-          isValid = false;
-        } else if(pregunta.validacion?.formato === 'email' && !emailPattern.test(valor)) {
-          errors[pregunta.id] = `Debe ingresar un email válido con dominio @stucom.com`;
-          isValid = false;
+        }
+
+        if (pregunta.validacion?.formato === "email") {
+          const domain = pregunta.validacion.dominio || "";
+          const emailPattern = new RegExp(`^[a-zA-Z0-9._%+-]+@${domain}$`);
+
+          if (!emailPattern.test(valor)) {
+            errors[pregunta.id] = t.emailError.replace("{domain}", domain);
+            isValid = false;
+          }
         }
       }
 
-      if(pregunta.tipo === 'select' && !valor) {
-        errors[pregunta.id] = "Debe seleccionar una opción";
-        isValid = false;
-      }
-      
-      // Validación de checkboxes, como máximo 2 seleccionados!
-      if(pregunta.tipo === 'check' && (!valor || valor.length === 0)) { // checkboxes devuelven un array vacío si no hay ninguno seleccionado, y un array vacío es truthy en JS, por eso comprobamos el length
-        errors[pregunta.id] = "Debe seleccionar una opción";
-        isValid = false;
-      } else {
-        if(pregunta.validacion && pregunta.validacion.max_seleccionados && valor.length > pregunta.validacion.max_seleccionados) {
-          errors[pregunta.id] = `Debe seleccionar como máximo ${pregunta.validacion.max_seleccionados} opciones`;
+      if (
+        pregunta.tipo === "check" &&
+        Array.isArray(valor) &&
+        pregunta.validacion?.max_seleccionados
+      ) {
+        if (valor.length > pregunta.validacion.max_seleccionados) {
+          errors[pregunta.id] = t.maxSelectionsError.replace(
+            "{max}",
+            pregunta.validacion.max_seleccionados.toString()
+          );
           isValid = false;
         }
       }
     });
 
     setFormErrors(errors);
+
+    if (!isValid) {
+      setGeneralError(t.formError);
+    }
+
     return isValid;
   };
 
-
   const handleSubmit = () => {
-    if(!validateForm()) return;
+    try {
+      if (!validateForm()) {
+        return;
+      }
 
-    // Guardar los datos del formulario en localStorage
-    localStorage.setItem(`formData_${cuestionarioActual}`, JSON.stringify(formData));
-    console.log("Form data saved to localStorage:", formData);
+      const updatedFormData = [...existingFormData];
 
-    // Paso al siguiente cuestionario:
-    if(cuestionarioActual < questions.length - 1) {
-      setCuestionarioActual(cuestionarioActual + 1);
-      setFormData({}); // Reset de los datos para el siguiente cuestionario
-    } else {
-      console.log("¡Cuestionarios completados!");
-      navigate("/resume"); // Redirecciona a la página de resumen
+      updatedFormData[cuestionarioActual] = {
+        ...currentFormData,
+        cuestionario: cuestionarioActual,
+      };
+
+      setExistingFormData(updatedFormData);
+
+      localStorage.setItem("formData", JSON.stringify(updatedFormData));
+
+      if (cuestionarioActual < questions.length - 1) {
+        setCuestionarioActual(cuestionarioActual + 1);
+      } else {
+        navigate("/resume");
+      }
+    } catch (error) {
+      console.error("Error saving form data:", error);
     }
   };
 
+  const progressPercentage =
+    ((cuestionarioActual + 1) / questions.length) * 100;
 
   return (
-    <>
-      {formGen(questions[cuestionarioActual], cuestionarioActual, handleInputChange, formErrors)}
-      <Button variant="filled" color="violet" size="md" radius="md" onClick={handleSubmit}>Siguiente</Button>
-    </>
+    <div>
+      <div style={{ marginBottom: "2rem" }}>
+        <Text size="sm" mb="xs">
+          {t.progress}: {cuestionarioActual + 1}/{questions.length}
+        </Text>
+        <Progress
+          value={progressPercentage}
+          color="violet"
+          size="md"
+          radius="xl"
+        />
+      </div>
+
+      <FormGenerator
+        form={questions[cuestionarioActual]}
+        handleInputChange={handleInputChange}
+        formErrors={formErrors}
+        formData={currentFormData}
+        language={language}
+      />
+
+      {generalError && (
+        <Alert
+          icon={<IconAlertCircle size={16} />}
+          title="Error"
+          color="red"
+          mb="md"
+        >
+          {generalError}
+        </Alert>
+      )}
+
+      <Button
+        variant="gradient"
+        gradient={{ from: "#667eea", to: "#764ba2", deg: 135 }}
+        size="md"
+        radius="md"
+        onClick={handleSubmit}
+      >
+        {cuestionarioActual < questions.length - 1 ? t.next : t.finish}
+      </Button>
+    </div>
   );
 };
 
