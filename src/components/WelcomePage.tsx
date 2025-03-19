@@ -1,12 +1,13 @@
 import { Button, Container, Title, Text, Paper } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import Particles from "react-tsparticles";
+import { Engine } from "tsparticles-engine";
 import { loadSlim } from "tsparticles-slim";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
 
-  const particlesInit = async (engine) => {
+  const particlesInit = async (engine: Engine) => {
     await loadSlim(engine);
   };
 
