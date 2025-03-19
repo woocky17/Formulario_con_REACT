@@ -8,12 +8,9 @@ import {
   Button,
   Group,
 } from "@mantine/core";
-import {
-  IconCircleCheck,
-  IconRefresh,
-  IconArrowLeft,
-} from "@tabler/icons-react";
-import questions from "../assets/cuestionarios.json";
+import questionsEs from "../assets/cuestionario-es.json";
+import questionsEn from "../assets/cuestionario-en.json";
+
 import { useNavigate } from "react-router-dom";
 import { Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -32,6 +29,8 @@ interface Props {
 const FormResume = ({ language, formData, onReset }: Props) => {
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
+
+const questions = language === "en" ? questionsEn : questionsEs;
 
   const dictionary = {
     es: {
@@ -104,7 +103,6 @@ const FormResume = ({ language, formData, onReset }: Props) => {
                 center
                 icon={
                   <ThemeIcon color="violet" size={24} radius="xl">
-                    <IconCircleCheck size={16} />
                   </ThemeIcon>
                 }
               >
@@ -151,7 +149,6 @@ const FormResume = ({ language, formData, onReset }: Props) => {
 
         <Group mt="xl">
           <Button
-            leftSection={<IconRefresh size={16} />}
             variant="outline"
             color="red"
             onClick={open}
@@ -160,7 +157,6 @@ const FormResume = ({ language, formData, onReset }: Props) => {
           </Button>
 
           <Button
-            leftSection={<IconArrowLeft size={16} />}
             variant="outline"
             color="blue"
             onClick={() => navigate("/")}

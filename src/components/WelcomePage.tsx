@@ -1,6 +1,5 @@
 import { Button, Container, Title, Text, Paper, List } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import { IconCheck } from "@tabler/icons-react";
 
 interface WelcomePageProps {
   language: string;
@@ -105,7 +104,6 @@ const WelcomePage = ({ language }: WelcomePageProps) => {
           spacing="sm"
           size="md"
           center
-          icon={<IconCheck style={{ color: "#764ba2" }} />}
           mb="xl"
         ></List>
 

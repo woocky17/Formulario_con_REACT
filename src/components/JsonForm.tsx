@@ -13,11 +13,11 @@ import {
   Alert,
   Progress,
 } from "@mantine/core";
-import questions from "../assets/cuestionarios.json";
+import questionsEs from "../assets/cuestionario-es.json";
+import questionsEn from "../assets/cuestionario-en.json";
 import { useState, useEffect } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
 import { useNavigate } from "react-router-dom";
-import { IconAlertCircle } from "@tabler/icons-react";
 
 interface FormQuestion {
   id: string;
@@ -230,6 +230,7 @@ const JsonForm = ({
   const [cuestionarioActual, setCuestionarioActual] = useState(0);
   const [generalError, setGeneralError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const questions = language === "en" ? questionsEn : questionsEs;
 
   const texts = {
     es: {
@@ -423,7 +424,6 @@ const JsonForm = ({
 
       {generalError && (
         <Alert
-          icon={<IconAlertCircle size={16} />}
           title="Error"
           color="red"
           mb="md"
