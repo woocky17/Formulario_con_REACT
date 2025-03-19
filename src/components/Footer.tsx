@@ -1,4 +1,4 @@
-import { Anchor, Container, Group, Switch, Text } from '@mantine/core';
+import { Anchor, Container, Group,  Text } from '@mantine/core';
 import classes from './Footer.module.css';
 import { useEffect, useState } from 'react';
 
@@ -41,7 +41,6 @@ export function Footer() {
     return (
     <div className={classes.footer}>
         <Container className={classes.inner}>
-        <img src="public/vite.svg"></img>
         <Text
             size="xl"
             fw={900}
