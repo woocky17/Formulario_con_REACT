@@ -425,7 +425,7 @@ const JsonForm = ({
             radius="md"
             onClick={() => backToPrevious()}
           >
-            {t.prev}
+            {t("prev")}
           </Button>
         )}
 
