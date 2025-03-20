@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import en from "../locales/en/translation.json";
-import es from "../locales/es/translation.json";
+import en from "../assets/cuestionario-en.json";
+import es from "../assets/cuestionario-es.json";
 
 // Definir las traducciones
 const resources = {

@@ -2,6 +2,7 @@ import { Container, NavLink, Switch } from "@mantine/core";
 import { useState, useEffect } from "react";
 import classes from "./Header.module.css";
 import WelcomeBanner from "../assets/banners/CuestionariosApp.jpg";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   language: string;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function Header({ language, setLanguage }: Props) {
+  const navigate = useNavigate();
+
   const [currentBanner, setCurrentBanner] = useState(0);
   const banners = [
     WelcomeBanner,
@@ -47,7 +50,7 @@ export function Header({ language, setLanguage }: Props) {
       <Container className={classes.inner} size="xl">
         <div className={classes.titleContainer}>
           <NavLink
-            href="#required-for-focus"
+            onClick={() => navigate("/form")}
             label={t.home}
             className={classes.navLink}
           />
