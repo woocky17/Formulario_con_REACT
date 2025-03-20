@@ -2,7 +2,7 @@
   {
     "globals": {
       "home": "Inicio",
-      "forms": "Formualarios",
+      "forms": "Formularios",
       "resume": "Resumen",
       "welcome": "Bienvenido",
       "description": "Esta aplicación te permite completar una serie de cuestionarios sobre diferentes temas.",

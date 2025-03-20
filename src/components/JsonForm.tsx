@@ -19,7 +19,7 @@ import { useState, useEffect } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import classes from './JsonForm.module.css';
+import classes from "./JsonForm.module.css";
 
 interface FormQuestion {
   id: string;
@@ -83,8 +83,6 @@ function InputTextGen({
   const errorMessage = formErrors[inputElement.id] || null;
   const { t } = useTranslation();
 
-
-
   if (inputElement.tipo === "text") {
     return InputAnimado(
       <TextInput
@@ -95,7 +93,9 @@ function InputTextGen({
         }
         error={errorMessage}
         value={currentValue || ""}
-        placeholder={inputElement.validacion?.min_edad ? t('datePlaceholder') : ''}
+        placeholder={
+          inputElement.validacion?.min_edad ? t("datePlaceholder") : ""
+        }
       />,
       indice
     );
@@ -350,6 +350,7 @@ const JsonForm = ({
           }
         }
 
+        // Valida si el formato del email es correcto
         if (pregunta.validacion?.formato === "email") {
           const domain = pregunta.validacion.dominio || "";
           const emailPattern = new RegExp(`^[a-zA-Z0-9._%+-]+@${domain}$`);
@@ -361,7 +362,7 @@ const JsonForm = ({
         }
       }
 
-      // Valida si el formato del email es correcto
+      // Valida si el tipo de campo es "check" y si hay un límite de selecciones
       if (
         pregunta.tipo === "check" &&
         Array.isArray(valor) &&

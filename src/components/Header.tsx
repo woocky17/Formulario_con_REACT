@@ -1,24 +1,32 @@
 import { Container, NavLink, Switch } from "@mantine/core";
 import { useState, useEffect } from "react";
 import classes from "./Header.module.css";
-import WelcomeBanner from "../assets/banners/CuestionariosApp.jpg";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import banner1 from "../assets/banners/banner1.png";
+import banner2 from "../assets/banners/banner2.png";
+import banner3 from "../assets/banners/banner3.png";
+import banner4 from "../assets/banners/banner4.png";
+import banner5 from "../assets/banners/banner5.png";
+
+/**
+ * 📌 Componente `Header`
+ * - Contiene la navegación principal de la aplicación.
+ * - Muestra un banner que cambia automáticamente.
+ * - Permite cambiar el idioma entre español e inglés.
+ */
 export function Header() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
   const [currentBanner, setCurrentBanner] = useState(0);
-  const banners = [
-    WelcomeBanner,
-    // añadir más banners
-  ];
+  const banners = [banner1, banner2, banner3, banner4, banner5];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [banners.length]);
@@ -70,7 +78,7 @@ export function Header() {
           className={classes.banner}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = WelcomeBanner;
+            target.src = banner1;
           }}
         />
       </div>
