@@ -3,6 +3,10 @@ import classes from "./Footer.module.css";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+/**
+ * 📌 Lista `links`
+ * Contiene un conjunto de objetos con nombres que se mostrarán como enlaces en el pie de página.
+ */
 const links = [
   { label: "David" },
   { label: "Raúl" },
@@ -10,20 +14,31 @@ const links = [
   { label: "Judith" },
 ];
 
+
+/**
+ * 📌 Componente `Footer`
+ * Renderiza un pie de página con el nombre de la aplicación, la fecha y hora actualizada dinámicamente y una lista de enlaces.
+ * - Usa `useState` para manejar la fecha y hora actualizada en tiempo real.
+ * - Utiliza `useEffect` para actualizar la fecha y hora cada segundo mediante un intervalo.
+ * - Traduce el nombre de la aplicación usando `useTranslation`.
+ *
+ * @returns Un componente de pie de página con nombre de la app, fecha/hora y enlaces.
+ */
 export function Footer() {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
   const { t } = useTranslation();
 
   /**
-   * Hook para actualizar el valor de la fecha cada segundo.
-   * Solo se ejecuta al montar el componente, generándose un intervalo que se actualiza cada segundo.
+   * 📌 `useEffect`
+   * - Inicia un intervalo que actualiza la fecha y hora cada segundo.
+   * - Se ejecuta solo una vez al montar el componente (`[]` como dependencia).
+   * - Limpia el intervalo cuando el componente se desmonta o cuando cambian las dependencias (antes de ejecutar el efecto de nuevo) para evitar fugas de memoria.
    */
   useEffect(() => {
     const interval = setInterval(() => {
       setDateTime(new Date().toLocaleString());
     }, 1000);
 
-    // limpieza cuando se desmonta el componente o cuando cambian las dependencias (antes de ejecutar el efecto de nuevo) -- en este caso no hay dependencias asociadas --:
     return () => clearInterval(interval);
   }, []);
 
@@ -54,7 +69,6 @@ export function Footer() {
         </Text>
         <Group className={classes.links}>{items}</Group>
       </Container>
-      {/* <Switch size="lg" onLabel="ENG" offLabel="ESP" color="violet"/> */}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { useState, useEffect } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import classes from './JsonForm.module.css';
 
 interface FormQuestion {
   id: string;
@@ -53,6 +54,18 @@ interface JsonFormProps {
   setFormData: React.Dispatch<React.SetStateAction<FormItem[]>>;
 }
 
+/**
+ * Función que genera el input correspondiente para cada tipo de pregunta.
+ * Dependiendo del tipo de pregunta (`text`, `select`, `check`, `textarea`), genera un componente
+ * de formulario adecuado con sus respectivas validaciones, manejo de errores y valores.
+ * @param {FormQuestion} inputElement - El objeto que contiene la pregunta y sus propiedades.
+ * @param {number} indice - El índice de la pregunta en el formulario.
+ * @param {Function} handleInputChange - Función para manejar el cambio en el valor del input.
+ * @param {Record<string, string>} formErrors - Objeto que contiene los errores de validación por cada input.
+ * @param {any} currentValue - El valor actual del input.
+ * @param {string} language - El idioma actual.
+ * @returns {JSX.Element} - El componente JSX correspondiente al tipo de input.
+ */
 function InputTextGen({
   inputElement,
   indice,
@@ -70,6 +83,8 @@ function InputTextGen({
   const errorMessage = formErrors[inputElement.id] || null;
   const { t } = useTranslation();
 
+
+
   if (inputElement.tipo === "text") {
     return InputAnimado(
       <TextInput
@@ -80,6 +95,7 @@ function InputTextGen({
         }
         error={errorMessage}
         value={currentValue || ""}
+        placeholder={inputElement.validacion?.min_edad ? t('datePlaceholder') : ''}
       />,
       indice
     );
@@ -165,7 +181,16 @@ function InputTextGen({
     </div>
   );
 }
-
+/**
+ * Función que genera el formulario completo, iterando sobre las preguntas y generando los
+ * inputs correspondientes. Además, maneja el cambio de valores y los errores de validación.
+ * @param {any} form - El objeto que contiene los datos del formulario (titulo, preguntas).
+ * @param {Function} handleInputChange - Función para manejar el cambio en el valor de los inputs.
+ * @param {Record<string, string>} formErrors - Objeto que contiene los errores de validación por cada input.
+ * @param {FormData} formData - Los datos actuales del formulario.
+ * @param {string} language - El idioma actual.
+ * @returns {JSX.Element} - El componente JSX del formulario completo.
+ */
 function FormGenerator({
   form,
   handleInputChange,
@@ -246,6 +271,12 @@ const JsonForm = ({
     }
   };
 
+  /**
+   * Función que maneja la validación del formulario, revisando si todas las preguntas
+   * tienen respuestas válidas y que cumplen con las restricciones especificadas.
+   * @returns {boolean} - Devuelve `true` si el formulario es válido, `false` en caso contrario.
+   */
+
   const validateForm = () => {
     const errors: Record<string, string> = {};
     let isValid = true;
@@ -255,6 +286,7 @@ const JsonForm = ({
     currentForm.preguntas!.forEach((pregunta: FormQuestion) => {
       const valor = currentFormData[pregunta.id];
 
+      // Valida si el valor está vacío o no se ha completado correctamente
       if (
         valor === undefined ||
         valor === null ||
@@ -266,6 +298,7 @@ const JsonForm = ({
         return;
       }
 
+      // Valida el tipo y el numero de caracteres de los campos "text" y "textarea"
       if (
         (pregunta.tipo === "text" || pregunta.tipo === "textarea") &&
         typeof valor === "string"
@@ -281,7 +314,7 @@ const JsonForm = ({
             isValid = false;
           }
         }
-
+        // Valida la edad mínima si está definida
         if (pregunta.validacion?.min_edad) {
           const datePattern = /^\d{2}-\d{2}-\d{4}$/;
 
@@ -328,6 +361,7 @@ const JsonForm = ({
         }
       }
 
+      // Valida si el formato del email es correcto
       if (
         pregunta.tipo === "check" &&
         Array.isArray(valor) &&
@@ -351,7 +385,10 @@ const JsonForm = ({
 
     return isValid;
   };
-
+  /**
+   * Función que maneja el envío del formulario. Valida el formulario, guarda los datos
+   * y navega a la siguiente pantalla o a la pantalla de resumen.
+   */
   const handleSubmit = () => {
     try {
       if (!validateForm()) {
@@ -378,7 +415,10 @@ const JsonForm = ({
       console.error("Error saving form data:", error);
     }
   };
-
+  /**
+   * Función que permite navegar hacia el cuestionario anterior.
+   * Se asegura de que no se pueda retroceder más allá del primer cuestionario.
+   */
   const backToPrevious = () => {
     if (cuestionarioActual > 0) {
       setCuestionarioActual(cuestionarioActual - 1);
@@ -416,7 +456,7 @@ const JsonForm = ({
         </Alert>
       )}
 
-      <div>
+      <div className={classes.buttonsContainer}>
         {cuestionarioActual > 0 && (
           <Button
             variant="gradient"

@@ -2,6 +2,16 @@ import { Button, Container, Title, Text, Paper, List } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+
+/**
+ * 📌 Componente `WelcomePage`
+ * Renderiza una página de bienvenida con un título, una descripción, una lista (actualmente vacía)
+ * y un botón que redirige al usuario al formulario.
+ * - Usa `useNavigate` para la navegación entre páginas.
+ * - Utiliza `useTranslation` para mostrar textos en el idioma seleccionado.
+ *
+ * @returns Un contenedor con un mensaje de bienvenida y un botón para continuar.
+ */
 const WelcomePage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
