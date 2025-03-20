@@ -69,7 +69,7 @@ function InputTextGen({
 }) {
   const errorMessage = formErrors[inputElement.id] || null;
 
-  const texts = {
+  const dictionary = {
     es: {
       selectPlaceholder: "Selecciona una opción",
     },
@@ -78,7 +78,7 @@ function InputTextGen({
     },
   };
 
-  const t = language === "en" ? texts.en : texts.es;
+  const t = language === "en" ? dictionary.en : dictionary.es;
 
   if (inputElement.tipo === "text") {
     return InputAnimado(
@@ -230,9 +230,8 @@ const JsonForm = ({
   const [cuestionarioActual, setCuestionarioActual] = useState(0);
   const [generalError, setGeneralError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const questions = language === "en" ? questionsEn : questionsEs;
 
-  const texts = {
+  const dictionary = {
     es: {
       next: "Siguiente",
       prev: "Anterior",
@@ -242,7 +241,6 @@ const JsonForm = ({
       lengthError: "El campo debe tener entre {min} y {max} caracteres",
       ageError: "Debe ser mayor de {age} años",
       emailError: "Debe ingresar un email válido con dominio @{domain}",
-      dateError: "Debe ingresar una fecha válida en formato DD-MM-YYYY (p.ej., 31-01-2002)",
       selectError: "Debe seleccionar una opción",
       maxSelectionsError: "Debe seleccionar máximo {max} opciones",
       minSelectionsError: "Debe seleccionar al menos una opción",
@@ -256,14 +254,13 @@ const JsonForm = ({
       lengthError: "Field must be between {min} and {max} characters",
       ageError: "You must be older than {age} years",
       emailError: "You must enter a valid email with domain @{domain}",
-      dateError: "You must enter a valid date with the DD-MM-YYYY format (e.g., 31-01-2002)",
       selectError: "You must select an option",
       maxSelectionsError: "You must select maximum {max} options",
       minSelectionsError: "You must select at least one option",
     },
   };
 
-  const t = language === "en" ? texts.en : texts.es;
+  const t = language === "en" ? dictionary.en : dictionary.es;
 
   useEffect(() => {
     if (existingFormData && existingFormData[cuestionarioActual]) {
@@ -272,6 +269,7 @@ const JsonForm = ({
       setCurrentFormData({});
     }
   }, [cuestionarioActual, existingFormData]);
+  const questions = language === "en" ? questionsEn : questionsEs;
 
   const handleInputChange = (id: string, value: any) => {
     setCurrentFormData((prevData) => ({
@@ -333,9 +331,8 @@ const JsonForm = ({
 
           // si no cumple con el pattern 01-02-1999
           if (!datePattern.test(valor)) {
-            errors[pregunta.id] = t.dateError;
+            errors[pregunta.id] = t.ageError;
             isValid = false;
-
           } else {
             // calculamos la diferencia de edad
             const [day, month, year] = valor.split("-").map(Number); // fecha que ha puesto el usuario viene en formato "19-02-1999", lo separamos en día, mes y año
@@ -452,11 +449,7 @@ const JsonForm = ({
       />
 
       {generalError && (
-        <Alert
-          title="Error"
-          color="red"
-          mb="md"
-        >
+        <Alert title="Error" color="red" mb="md">
           {generalError}
         </Alert>
       )}

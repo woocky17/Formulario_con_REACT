@@ -1,7 +1,8 @@
-import { Container, Switch, Title } from "@mantine/core";
+import { Container, NavLink, Switch } from "@mantine/core";
 import { useState, useEffect } from "react";
 import classes from "./Header.module.css";
 import WelcomeBanner from "../assets/banners/CuestionariosApp.jpg";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   language: string;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function Header({ language, setLanguage }: Props) {
+  const navigate = useNavigate();
+
   const [currentBanner, setCurrentBanner] = useState(0);
   const banners = [
     WelcomeBanner,
@@ -27,13 +30,43 @@ export function Header({ language, setLanguage }: Props) {
     setLanguage(language === "es" ? "en" : "es");
   };
 
+  const dictionary = {
+    es: {
+      home: "Inicio",
+      forms: "Formualarios",
+      resume: "Resumen",
+    },
+    en: {
+      home: "Home",
+      forms: "Forms",
+      resume: "Summary",
+    },
+  };
+
+  const t = language === "en" ? dictionary.en : dictionary.es;
+
   return (
     <header className={classes.header}>
       <Container className={classes.inner} size="xl">
         <div className={classes.titleContainer}>
-          <Title className={classes.title} order={1}>
-            Forms React
-          </Title>
+          <NavLink
+            onClick={() => navigate("/form")}
+            label={t.home}
+            className={classes.navLink}
+          />
+
+          <NavLink
+            href="#required-for-focus"
+            label={t.forms}
+            className={classes.navLink}
+          />
+
+          <NavLink
+            href="#required-for-focus"
+            label={t.resume}
+            className={classes.navLink}
+          />
+
           <Switch
             size="md"
             onLabel="EN"
