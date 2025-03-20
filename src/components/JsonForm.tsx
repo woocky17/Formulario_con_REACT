@@ -454,6 +454,7 @@ const JsonForm = ({
         </Alert>
       )}
 
+    <div>
       {cuestionarioActual > 0 && (
         <Button
           variant="gradient"
@@ -474,6 +475,7 @@ const JsonForm = ({
       >
         {cuestionarioActual < questions.length - 1 ? t.next : t.finish}
       </Button>
+    </div>
     </div>
   );
 };
