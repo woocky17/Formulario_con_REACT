@@ -14,6 +14,7 @@ import questionsEn from "../assets/cuestionario-en.json";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { useTranslation } from "react-i18next";
 
 interface FormItem {
   cuestionario: number;
@@ -29,40 +30,12 @@ interface Props {
 const FormResume = ({ language, formData, onReset }: Props) => {
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
+  const { t } = useTranslation();
 
-const questions = language === "en" ? questionsEn : questionsEs;
-
-  const dictionary = {
-    es: {
-      title: "Resumen de respuestas",
-      noData: "No hay datos de formulario guardados.",
-      reset: "Reiniciar cuestionarios",
-      back: "Volver al inicio",
-      questionariTitle: "Cuestionario",
-      question: "Pregunta",
-      answer: "Respuesta",
-      cancel: "Cancelar",
-      confirm: "¿Estás seguro de que quieres borrar este registro?",
-      acceptReset: "Reiniciar",
-    },
-    en: {
-      title: "Response summary",
-      noData: "No form data saved.",
-      reset: "Reset questionnaires",
-      back: "Back to home",
-      questionariTitle: "Questionnaire",
-      question: "Question",
-      answer: "Answer",
-      cancel: "Cancel",
-      confirm: "Are you sure you want to delete this record?",
-      acceptReset: "Restart",
-    },
-  };
-
-  const t = language === "en" ? dictionary.en : dictionary.es;
+  const questions = language === "en" ? questionsEn : questionsEs;
 
   const getQuestion = (cuestionarioIndex: number, questionId: string) => {
-    if (!questions[cuestionarioIndex]) return questionId;
+    if (!questions[cuestionarioIndex].preguntas) return questionId;
 
     const question = questions[cuestionarioIndex].preguntas.find(
       (q: { id: string }) => q.id === questionId
@@ -79,7 +52,7 @@ const questions = language === "en" ? questionsEn : questionsEs;
     <Container size="lg">
       <Paper shadow="sm" p="xl" radius="md" withBorder mb="xl">
         <Title order={1} mb="xl" style={{ color: "#764ba2" }}>
-          {t.title}
+          {t("title")}
         </Title>
 
         {formData.length > 0 ? (
@@ -94,7 +67,7 @@ const questions = language === "en" ? questionsEn : questionsEs;
             >
               <Title order={2} mb="md" style={{ color: "#667eea" }}>
                 {questions[formItem.cuestionario]?.titulo ||
-                  `${t.questionariTitle} ${formItem.cuestionario + 1}`}
+                  `${t("questionariTitle")} ${formItem.cuestionario + 1}`}
               </Title>
 
               <List
@@ -102,8 +75,7 @@ const questions = language === "en" ? questionsEn : questionsEs;
                 size="md"
                 center
                 icon={
-                  <ThemeIcon color="violet" size={24} radius="xl">
-                  </ThemeIcon>
+                  <ThemeIcon color="violet" size={24} radius="xl"></ThemeIcon>
                 }
               >
                 {Object.entries(formItem)
@@ -125,12 +97,12 @@ const questions = language === "en" ? questionsEn : questionsEs;
           ))
         ) : (
           <Text size="lg" mb="xl">
-            {t.noData}
+            {t("noData")}
           </Text>
         )}
 
         <Modal opened={opened} onClose={close}>
-          <Text>{t.confirm}</Text>
+          <Text>{t("confirm")}</Text>
           <div
             style={{
               display: "flex",
@@ -139,29 +111,21 @@ const questions = language === "en" ? questionsEn : questionsEs;
             }}
           >
             <Button variant="default" onClick={close} mr={10}>
-              {t.cancel}
+              {t("cancel")}
             </Button>
             <Button color="red" onClick={handleReset}>
-              {t.acceptReset}
+              {t("acceptReset")}
             </Button>
           </div>
         </Modal>
 
         <Group mt="xl">
-          <Button
-            variant="outline"
-            color="red"
-            onClick={open}
-          >
-            {t.reset}
+          <Button variant="outline" color="red" onClick={open}>
+            {t("reset")}
           </Button>
 
-          <Button
-            variant="outline"
-            color="blue"
-            onClick={() => navigate("/")}
-          >
-            {t.back}
+          <Button variant="outline" color="blue" onClick={() => navigate("/")}>
+            {t("back")}
           </Button>
         </Group>
       </Paper>

@@ -3,19 +3,16 @@ import { useState, useEffect } from "react";
 import classes from "./Header.module.css";
 import WelcomeBanner from "../assets/banners/CuestionariosApp.jpg";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-interface Props {
-  language: string;
-  setLanguage: (lang: string) => void;
-}
-
-export function Header({ language, setLanguage }: Props) {
+export function Header() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const [currentBanner, setCurrentBanner] = useState(0);
   const banners = [
     WelcomeBanner,
-    //añadir mas banners
+    // añadir más banners
   ];
 
   useEffect(() => {
@@ -27,43 +24,31 @@ export function Header({ language, setLanguage }: Props) {
   }, [banners.length]);
 
   const handleLanguageChange = () => {
-    setLanguage(language === "es" ? "en" : "es");
+    const newLanguage = i18n.language === "es" ? "en" : "es";
+    i18n
+      .changeLanguage(newLanguage)
+      .catch((err) => console.error("Error changing language:", err));
   };
-
-  const dictionary = {
-    es: {
-      home: "Inicio",
-      forms: "Formualarios",
-      resume: "Resumen",
-    },
-    en: {
-      home: "Home",
-      forms: "Forms",
-      resume: "Summary",
-    },
-  };
-
-  const t = language === "en" ? dictionary.en : dictionary.es;
 
   return (
     <header className={classes.header}>
       <Container className={classes.inner} size="xl">
         <div className={classes.titleContainer}>
           <NavLink
+            onClick={() => navigate("/")}
+            label={t("home")}
+            className={classes.navLink}
+          />
+
+          <NavLink
             onClick={() => navigate("/form")}
-            label={t.home}
+            label={t("forms")}
             className={classes.navLink}
           />
 
           <NavLink
-            href="#required-for-focus"
-            label={t.forms}
-            className={classes.navLink}
-          />
-
-          <NavLink
-            href="#required-for-focus"
-            label={t.resume}
+            onClick={() => navigate("/resume")}
+            label={t("resume")}
             className={classes.navLink}
           />
 
@@ -72,7 +57,7 @@ export function Header({ language, setLanguage }: Props) {
             onLabel="EN"
             offLabel="ES"
             color="violet"
-            checked={language === "en"}
+            checked={i18n.language === "en"}
             onChange={handleLanguageChange}
           />
         </div>

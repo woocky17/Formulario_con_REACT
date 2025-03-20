@@ -5,8 +5,9 @@ import WelcomePage from "./components/WelcomePage";
 import { Route, Routes } from "react-router-dom";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "@mantine/core";
+import { useTranslation } from "react-i18next";
 
 interface FormItem {
   cuestionario: number;
@@ -14,7 +15,7 @@ interface FormItem {
 }
 
 function App() {
-  const [language, setLanguage] = useState("es");
+  const { i18n } = useTranslation();
   const [formData, setFormData] = useState<FormItem[]>([]);
 
   useEffect(() => {
@@ -37,18 +38,18 @@ function App() {
 
   return (
     <div className="app-container">
-      <Header language={language} setLanguage={setLanguage} />
+      <Header />
       <main className="main-content">
         <Container size="lg" py="xl">
           <Routes>
-            <Route path="/" element={<WelcomePage language={language} />} />
+            <Route path="/" element={<WelcomePage />} />
             <Route
               path="/form"
               element={
                 <JsonForm
-                  language={language}
                   formData={formData}
                   setFormData={setFormData}
+                  language={i18n.language}
                 />
               }
             />
@@ -56,9 +57,9 @@ function App() {
               path="/resume"
               element={
                 <FormResume
-                  language={language}
                   formData={formData}
                   onReset={handleReset}
+                  language={i18n.language}
                 />
               }
             />

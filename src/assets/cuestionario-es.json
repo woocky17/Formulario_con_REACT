@@ -1,5 +1,35 @@
 [
   {
+    "home": "Inicio",
+    "forms": "Formualarios",
+    "resume": "Resumen",
+    "welcome": "Bienvenido",
+    "description": "Esta aplicación te permite completar una serie de cuestionarios sobre diferentes temas.",
+    "startButton": "Comenzar",
+    "appName": "CuestionariosApp",
+    "title": "Resumen de respuestas",
+    "noData": "No hay datos de formulario guardados.",
+    "reset": "Reiniciar cuestionarios",
+    "back": "Volver al inicio",
+    "questionariTitle": "Cuestionario",
+    "question": "Pregunta",
+    "answer": "Respuesta",
+    "cancel": "Cancelar",
+    "confirm": "¿Estás seguro de que quieres borrar este registro?",
+    "acceptReset": "Reiniciar",
+    "next": "Siguiente",
+    "finish": "Finalizar",
+    "formError": "Por favor, corrige los errores antes de continuar.",
+    "progress": "Progreso",
+    "lengthError": "El campo debe tener entre {min} y {max} caracteres",
+    "ageError": "Debe ser mayor de {age} años",
+    "emailError": "Debe ingresar un email válido con dominio @{domain}",
+    "selectError": "Debe seleccionar una opción",
+    "maxSelectionsError": "Debe seleccionar máximo {max} opciones",
+    "minSelectionsError": "Debe seleccionar al menos una opción",
+    "selectPlaceholder": "Selecciona una opción"
+  },
+  {
     "titulo": "Cuestionario de Datos del Usuario",
     "preguntas": [
       {
@@ -44,14 +74,23 @@
         "tipo": "select",
         "pregunta": "¿Cuál es tu sexo?",
         "respuesta": "",
-        "opciones": ["Masculino", "Femenino", "Otro"]
+        "opciones": [
+          "Masculino",
+          "Femenino",
+          "Otro"
+        ]
       },
       {
         "id": "preferencias",
         "tipo": "check",
         "pregunta": "¿Qué prefieres hacer en tu tiempo libre?",
         "respuesta": "",
-        "opciones": ["Leer", "Deportes", "Viajar", "Cine"]
+        "opciones": [
+          "Leer",
+          "Deportes",
+          "Viajar",
+          "Cine"
+        ]
       }
     ]
   },
@@ -73,14 +112,23 @@
         "tipo": "select",
         "pregunta": "¿Qué tan satisfecho estás con el contenido del curso?",
         "respuesta": "4",
-        "opciones": ["1", "2", "3", "4", "5"]
+        "opciones": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ]
       },
       {
         "id": "asistencia",
         "tipo": "check",
         "pregunta": "¿Asististe a todas las clases?",
         "respuesta": "no",
-        "opciones": ["sí", "no"]
+        "opciones": [
+          "sí",
+          "no"
+        ]
       },
       {
         "id": "horarios",
@@ -118,14 +166,25 @@
         "tipo": "select",
         "pregunta": "¿Qué sistema operativo prefieres usar?",
         "respuesta": "Linux",
-        "opciones": ["Windows", "Linux", "MacOS"]
+        "opciones": [
+          "Windows",
+          "Linux",
+          "MacOS"
+        ]
       },
       {
         "id": "productos",
         "tipo": "check",
         "pregunta": "¿Qué dispositivos usas regularmente? (Selecciona hasta 2 opciones)",
-        "respuesta": ["smartphone"],
-        "opciones": ["smartphone", "laptop", "tablet", "smartwatch"],
+        "respuesta": [
+          "smartphone"
+        ],
+        "opciones": [
+          "smartphone",
+          "laptop",
+          "tablet",
+          "smartwatch"
+        ],
         "validacion": {
           "max_seleccionados": 2
         }
@@ -135,7 +194,18 @@
         "tipo": "select",
         "pregunta": "¿Cuántas horas a la semana dedicas a aprender sobre tecnología?",
         "respuesta": "5",
-        "opciones": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        "opciones": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10"
+        ]
       }
     ]
   },
@@ -157,21 +227,37 @@
         "tipo": "select",
         "pregunta": "¿Cuál es tu película favorita?",
         "respuesta": "Inception",
-        "opciones": ["Inception", "The Matrix", "Avengers", "Titanic"]
+        "opciones": [
+          "Inception",
+          "The Matrix",
+          "Avengers",
+          "Titanic"
+        ]
       },
       {
         "id": "vista",
         "tipo": "check",
         "pregunta": "¿Has visto alguna de las siguientes películas?",
         "respuesta": "sí",
-        "opciones": ["Inception", "The Matrix", "Avengers", "Titanic"]
+        "opciones": [
+          "Inception",
+          "The Matrix",
+          "Avengers",
+          "Titanic"
+        ]
       },
       {
         "id": "frecuencia",
         "tipo": "select",
         "pregunta": "¿Con qué frecuencia ves películas?",
         "respuesta": "4",
-        "opciones": ["1", "2", "3", "4", "5"]
+        "opciones": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ]
       }
     ]
   }

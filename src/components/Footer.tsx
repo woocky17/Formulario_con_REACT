@@ -1,59 +1,60 @@
-import { Anchor, Container, Group,  Text } from '@mantine/core';
-import classes from './Footer.module.css';
-import { useEffect, useState } from 'react';
+import { Anchor, Container, Group, Text } from "@mantine/core";
+import classes from "./Footer.module.css";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const links = [
-  { link: '#', label: 'David' },
-  { link: '#', label: 'Raúl' },
-  { link: '#', label: 'Marc' },
-  { link: '#', label: 'Judith' },
+  { label: "David" },
+  { label: "Raúl" },
+  { label: "Marc" },
+  { label: "Judith" },
 ];
 
 export function Footer() {
-    const [dateTime, setDateTime] = useState(new Date().toLocaleString());
+  const [dateTime, setDateTime] = useState(new Date().toLocaleString());
+  const { t } = useTranslation();
 
-    /**
-     * Hook para actualizar el valor de la fecha cada segundo.
-     * Solo se ejecuta al montar el componente, generándose un intervalo que se actualiza cada segundo.
-     */
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setDateTime(new Date().toLocaleString());
-        }, (1000));
+  /**
+   * Hook para actualizar el valor de la fecha cada segundo.
+   * Solo se ejecuta al montar el componente, generándose un intervalo que se actualiza cada segundo.
+   */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDateTime(new Date().toLocaleString());
+    }, 1000);
 
-        // limpieza cuando se desmonta el componente o cuando cambian las dependencias (antes de ejecutar el efecto de nuevo) -- en este caso no hay dependencias asociadas --:
-        return () => clearInterval(interval);
-    }, []);
+    // limpieza cuando se desmonta el componente o cuando cambian las dependencias (antes de ejecutar el efecto de nuevo) -- en este caso no hay dependencias asociadas --:
+    return () => clearInterval(interval);
+  }, []);
 
-    
-    const items = links.map((link) => (
-    <Anchor<'a'>
-        c="dimmed"
-        key={link.label}
-        href={link.link}
-        onClick={(event) => event.preventDefault()}
-        size="sm"
+  const items = links.map((link) => (
+    <Anchor<"a">
+      c="dimmed"
+      key={link.label}
+      onClick={(event) => event.preventDefault()}
+      size="sm"
     >
-        {link.label}
+      {link.label}
     </Anchor>
-    ));
+  ));
 
-    return (
+  return (
     <div className={classes.footer}>
-        <Container className={classes.inner}>
+      <Container className={classes.inner}>
         <Text
-            size="xl"
-            fw={900}
-            variant="gradient"
-            gradient={{ from: 'grape', to: 'blue', deg: 84 }}>
-            CuestionariosApp
+          size="xl"
+          fw={900}
+          variant="gradient"
+          gradient={{ from: "grape", to: "blue", deg: 84 }}
+        >
+          {t("appName")}
         </Text>
         <Text size="m" c="violet" fw={600}>
-            {dateTime}
+          {dateTime}
         </Text>
         <Group className={classes.links}>{items}</Group>
-        </Container>
-        {/* <Switch size="lg" onLabel="ENG" offLabel="ESP" color="violet"/> */}
+      </Container>
+      {/* <Switch size="lg" onLabel="ENG" offLabel="ESP" color="violet"/> */}
     </div>
-    );
+  );
 }

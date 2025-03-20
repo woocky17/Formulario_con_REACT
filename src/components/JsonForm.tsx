@@ -18,6 +18,7 @@ import questionsEn from "../assets/cuestionario-en.json";
 import { useState, useEffect } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface FormQuestion {
   id: string;
@@ -58,7 +59,6 @@ function InputTextGen({
   handleInputChange,
   formErrors,
   currentValue,
-  language,
 }: {
   inputElement: FormQuestion;
   indice: number;
@@ -68,17 +68,7 @@ function InputTextGen({
   language: string;
 }) {
   const errorMessage = formErrors[inputElement.id] || null;
-
-  const dictionary = {
-    es: {
-      selectPlaceholder: "Selecciona una opción",
-    },
-    en: {
-      selectPlaceholder: "Select an option",
-    },
-  };
-
-  const t = language === "en" ? dictionary.en : dictionary.es;
+  const { t } = useTranslation();
 
   if (inputElement.tipo === "text") {
     return InputAnimado(
@@ -90,7 +80,6 @@ function InputTextGen({
         }
         error={errorMessage}
         value={currentValue || ""}
-        required
       />,
       indice
     );
@@ -108,8 +97,7 @@ function InputTextGen({
         onChange={(value) => handleInputChange(inputElement.id, value || "")}
         error={errorMessage}
         value={currentValue || null}
-        placeholder={t.selectPlaceholder}
-        required
+        placeholder={t("selectPlaceholder")}
       />,
       indice
     );
@@ -126,7 +114,6 @@ function InputTextGen({
           onChange={(value) => handleInputChange(inputElement.id, value)}
           label={TextoAnimado(inputElement.pregunta, indice)}
           error={errorMessage}
-          required
         >
           <Group mt="xs">
             {(inputElement.opciones || []).map((option, i) => (
@@ -145,7 +132,6 @@ function InputTextGen({
         onChange={(value) => handleInputChange(inputElement.id, value)}
         error={errorMessage}
         value={currentValue || ""}
-        required
       >
         <Group mt="xs">
           {(inputElement.opciones || []).map((element, i) => (
@@ -168,7 +154,6 @@ function InputTextGen({
         error={errorMessage}
         value={currentValue || ""}
         minRows={4}
-        required
       />,
       indice
     );
@@ -231,34 +216,7 @@ const JsonForm = ({
   const [generalError, setGeneralError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const dictionary = {
-    es: {
-      next: "Siguiente",
-      finish: "Finalizar",
-      formError: "Por favor, corrige los errores antes de continuar.",
-      progress: "Progreso",
-      lengthError: "El campo debe tener entre {min} y {max} caracteres",
-      ageError: "Debe ser mayor de {age} años",
-      emailError: "Debe ingresar un email válido con dominio @{domain}",
-      selectError: "Debe seleccionar una opción",
-      maxSelectionsError: "Debe seleccionar máximo {max} opciones",
-      minSelectionsError: "Debe seleccionar al menos una opción",
-    },
-    en: {
-      next: "Next",
-      finish: "Finish",
-      formError: "Please correct the errors before continuing.",
-      progress: "Progress",
-      lengthError: "Field must be between {min} and {max} characters",
-      ageError: "You must be older than {age} years",
-      emailError: "You must enter a valid email with domain @{domain}",
-      selectError: "You must select an option",
-      maxSelectionsError: "You must select maximum {max} options",
-      minSelectionsError: "You must select at least one option",
-    },
-  };
-
-  const t = language === "en" ? dictionary.en : dictionary.es;
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (existingFormData && existingFormData[cuestionarioActual]) {
@@ -294,7 +252,7 @@ const JsonForm = ({
 
     const currentForm = questions[cuestionarioActual];
 
-    currentForm.preguntas.forEach((pregunta: FormQuestion) => {
+    currentForm.preguntas!.forEach((pregunta: FormQuestion) => {
       const valor = currentFormData[pregunta.id];
 
       if (
@@ -303,7 +261,7 @@ const JsonForm = ({
         valor === "" ||
         (Array.isArray(valor) && valor.length === 0)
       ) {
-        errors[pregunta.id] = t.selectError;
+        errors[pregunta.id] = t("selectError");
         isValid = false;
         return;
       }
@@ -317,7 +275,7 @@ const JsonForm = ({
             valor.length < pregunta.restricciones.min ||
             valor.length > pregunta.restricciones.max
           ) {
-            errors[pregunta.id] = t.lengthError
+            errors[pregunta.id] = t("lengthError")
               .replace("{min}", pregunta.restricciones.min.toString())
               .replace("{max}", pregunta.restricciones.max.toString());
             isValid = false;
@@ -329,7 +287,7 @@ const JsonForm = ({
 
           // si no cumple con el pattern 01-02-1999
           if (!datePattern.test(valor)) {
-            errors[pregunta.id] = t.ageError;
+            errors[pregunta.id] = t("ageError");
             isValid = false;
           } else {
             // calculamos la diferencia de edad
@@ -346,7 +304,7 @@ const JsonForm = ({
                 monthDifference === 0 &&
                 dayDifference < 0)
             ) {
-              errors[pregunta.id] = t.ageError.replace(
+              errors[pregunta.id] = t("ageError").replace(
                 "{age}",
                 pregunta.validacion.min_edad.toString()
               );
@@ -360,7 +318,7 @@ const JsonForm = ({
           const emailPattern = new RegExp(`^[a-zA-Z0-9._%+-]+@${domain}$`);
 
           if (!emailPattern.test(valor)) {
-            errors[pregunta.id] = t.emailError.replace("{domain}", domain);
+            errors[pregunta.id] = t("emailError").replace("{domain}", domain);
             isValid = false;
           }
         }
@@ -372,7 +330,7 @@ const JsonForm = ({
         pregunta.validacion?.max_seleccionados
       ) {
         if (valor.length > pregunta.validacion.max_seleccionados) {
-          errors[pregunta.id] = t.maxSelectionsError.replace(
+          errors[pregunta.id] = t("maxSelectionsError").replace(
             "{max}",
             pregunta.validacion.max_seleccionados.toString()
           );
@@ -384,7 +342,7 @@ const JsonForm = ({
     setFormErrors(errors);
 
     if (!isValid) {
-      setGeneralError(t.formError);
+      setGeneralError(t("formError"));
     }
 
     return isValid;
@@ -424,7 +382,7 @@ const JsonForm = ({
     <div>
       <div style={{ marginBottom: "2rem" }}>
         <Text size="sm" mb="xs">
-          {t.progress}: {cuestionarioActual + 1}/{questions.length}
+          {t("progress")}: {cuestionarioActual + 1}/{questions.length}
         </Text>
         <Progress
           value={progressPercentage}
@@ -455,7 +413,7 @@ const JsonForm = ({
         radius="md"
         onClick={handleSubmit}
       >
-        {cuestionarioActual < questions.length - 1 ? t.next : t.finish}
+        {cuestionarioActual < questions.length - 1 ? t("next") : t("finish")}
       </Button>
     </div>
   );
