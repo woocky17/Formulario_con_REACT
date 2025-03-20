@@ -235,6 +235,7 @@ const JsonForm = ({
   const texts = {
     es: {
       next: "Siguiente",
+      prev: "Anterior",
       finish: "Finalizar",
       formError: "Por favor, corrige los errores antes de continuar.",
       progress: "Progreso",
@@ -248,6 +249,7 @@ const JsonForm = ({
     },
     en: {
       next: "Next",
+      prev: "Previous",
       finish: "Finish",
       formError: "Please correct the errors before continuing.",
       progress: "Progress",
@@ -336,20 +338,21 @@ const JsonForm = ({
 
           } else {
             // calculamos la diferencia de edad
-            const birthDate = new Date(valor);
-            const age = new Date().getFullYear() - birthDate.getFullYear();
-            const monthDifference = new Date().getMonth() - birthDate.getMonth();
-            const dayDifference = new Date().getDate() - birthDate.getDate();
+            const [day, month, year] = valor.split("-").map(Number); // fecha que ha puesto el usuario viene en formato "19-02-1999", lo separamos en día, mes y año
+            const birthDate = new Date(year, month - 1, day); // meses empiezan por 0, por eso restamos 1 al mes
 
-            if (
-              age < pregunta.validacion.min_edad ||
-              (age === pregunta.validacion.min_edad && monthDifference < 0) ||
-              (age === pregunta.validacion.min_edad && monthDifference === 0 && dayDifference < 0)
-            ) {
-              errors[pregunta.id] = t.ageError.replace(
-                "{age}",
-                pregunta.validacion.min_edad.toString()
-              );
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            const dayDifference = today.getDate() - birthDate.getDate();
+
+            // si aún no ha cumplido años en el año actual
+            if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+              age--;
+            }
+
+            if (age < pregunta.validacion.min_edad) {
+              errors[pregunta.id] = t.ageError.replace("{age}", pregunta.validacion.min_edad.toString());
               isValid = false;
             }
           }
@@ -417,6 +420,12 @@ const JsonForm = ({
     }
   };
 
+  const backToPrevious = () => {
+    if (cuestionarioActual > 0) {
+      setCuestionarioActual(cuestionarioActual - 1);
+    }
+  };
+
   const progressPercentage =
     ((cuestionarioActual + 1) / questions.length) * 100;
 
@@ -450,6 +459,17 @@ const JsonForm = ({
         >
           {generalError}
         </Alert>
+      )}
+
+      {cuestionarioActual > 0 && (
+        <Button
+          variant="gradient"
+          gradient={{ from: "#667eea", to: "#764ba2", deg: 135 }}
+          size="md" radius="md"
+          onClick={() => backToPrevious()}
+        >
+          {t.prev}
+        </Button>
       )}
 
       <Button
