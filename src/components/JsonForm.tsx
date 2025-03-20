@@ -241,6 +241,7 @@ const JsonForm = ({
       lengthError: "El campo debe tener entre {min} y {max} caracteres",
       ageError: "Debe ser mayor de {age} años",
       emailError: "Debe ingresar un email válido con dominio @{domain}",
+      dateError: "Debe ingresar una fecha válida en formato DD-MM-YYYY (p.ej., 31-01-2002)",
       selectError: "Debe seleccionar una opción",
       maxSelectionsError: "Debe seleccionar máximo {max} opciones",
       minSelectionsError: "Debe seleccionar al menos una opción",
@@ -253,6 +254,7 @@ const JsonForm = ({
       lengthError: "Field must be between {min} and {max} characters",
       ageError: "You must be older than {age} years",
       emailError: "You must enter a valid email with domain @{domain}",
+      dateError: "You must enter a valid date with the DD-MM-YYYY format (e.g., 31-01-2002)",
       selectError: "You must select an option",
       maxSelectionsError: "You must select maximum {max} options",
       minSelectionsError: "You must select at least one option",
@@ -324,15 +326,33 @@ const JsonForm = ({
           }
         }
 
-        if (
-          pregunta.validacion?.min_edad &&
-          parseInt(valor) < pregunta.validacion.min_edad
-        ) {
-          errors[pregunta.id] = t.ageError.replace(
-            "{age}",
-            pregunta.validacion.min_edad.toString()
-          );
-          isValid = false;
+        if (pregunta.validacion?.min_edad) {
+          const datePattern = /^\d{2}-\d{2}-\d{4}$/;
+
+          // si no cumple con el pattern 01-02-1999
+          if (!datePattern.test(valor)) {
+            errors[pregunta.id] = t.dateError;
+            isValid = false;
+
+          } else {
+            // calculamos la diferencia de edad
+            const birthDate = new Date(valor);
+            const age = new Date().getFullYear() - birthDate.getFullYear();
+            const monthDifference = new Date().getMonth() - birthDate.getMonth();
+            const dayDifference = new Date().getDate() - birthDate.getDate();
+
+            if (
+              age < pregunta.validacion.min_edad ||
+              (age === pregunta.validacion.min_edad && monthDifference < 0) ||
+              (age === pregunta.validacion.min_edad && monthDifference === 0 && dayDifference < 0)
+            ) {
+              errors[pregunta.id] = t.ageError.replace(
+                "{age}",
+                pregunta.validacion.min_edad.toString()
+              );
+              isValid = false;
+            }
+          }
         }
 
         if (pregunta.validacion?.formato === "email") {

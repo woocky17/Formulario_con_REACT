@@ -34,10 +34,10 @@ const questions = language === "en" ? questionsEn : questionsEs;
 
   const dictionary = {
     es: {
-      title: "Resumen de Respuestas",
+      title: "Resumen de respuestas",
       noData: "No hay datos de formulario guardados.",
-      reset: "Reiniciar Cuestionarios",
-      back: "Volver al Inicio",
+      reset: "Reiniciar cuestionarios",
+      back: "Volver al inicio",
       questionariTitle: "Cuestionario",
       question: "Pregunta",
       answer: "Respuesta",
@@ -46,10 +46,10 @@ const questions = language === "en" ? questionsEn : questionsEs;
       acceptReset: "Reiniciar",
     },
     en: {
-      title: "Response Summary",
+      title: "Response summary",
       noData: "No form data saved.",
-      reset: "Reset Questionnaires",
-      back: "Back to Home",
+      reset: "Reset questionnaires",
+      back: "Back to home",
       questionariTitle: "Questionnaire",
       question: "Question",
       answer: "Answer",
