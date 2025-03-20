@@ -3,6 +3,26 @@ import { useNavigate } from "react-router-dom";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
+  // const particlesInit = async (engine: Engine) => {
+  //   await loadSlim(engine);
+  // };
+
+  const dictionary = {
+    es: {
+      welcome: "Bienvenido",
+      description:
+        "Esta aplicación te permite completar una serie de cuestionarios sobre diferentes temas.",
+      startButton: "Comenzar",
+    },
+    en: {
+      welcome: "Welcome",
+      description:
+        "This application allows you to complete a series of questionnaires on different topics.",
+      startButton: "Start",
+    },
+  };
+
+  const t = language === "en" ? dictionary.en : dictionary.es;
 
   return (
     <div

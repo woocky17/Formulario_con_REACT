@@ -1,21 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TextInput, Textarea, Select, Radio, Group, Button } from "@mantine/core";
 import questions from "../assets/cuestionarios.json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InputAnimado, TextoAnimado } from "./animation";
 import { useNavigate } from "react-router-dom";
 
 // TODO: Cargar los datos del localStorage si existen
 function InputTextGen({ inputElement, indice, handleInputChange, formErrors }: any) {
-  const [value, setValue] = useState("");
   
   const handleChange = (event: any) => {
     const inputValue = event.target.value;
-    setValue(inputValue);
     handleInputChange(inputElement.id, inputValue);
   };
 
   const errorMessage = formErrors[inputElement.id] || null;
+
+  const dictionary = {
+    es: {
+      selectPlaceholder: "Selecciona una opción",
+    },
+    en: {
+      selectPlaceholder: "Select an option",
+    },
+  };
+
+  const t = language === "en" ? dictionary.en : dictionary.es;
 
   if (inputElement.tipo === "text") {
     return InputAnimado(
@@ -109,7 +118,45 @@ const JsonForm = () => {
   const [formData, setFormData] = useState<any>({});
   const [formErrors, setFormErrors] = useState<any>({});
   const [cuestionarioActual, setCuestionarioActual] = useState(0);
+  const [existingFormData, setCurrentFormData] = useState<any>({});
   const navigate = useNavigate();
+
+  const texts = {
+    es: {
+      next: "Siguiente",
+      finish: "Finalizar",
+      formError: "Por favor, corrige los errores antes de continuar.",
+      progress: "Progreso",
+      lengthError: "El campo debe tener entre {min} y {max} caracteres",
+      ageError: "Debe ser mayor de {age} años",
+      emailError: "Debe ingresar un email válido con dominio @{domain}",
+      selectError: "Debe seleccionar una opción",
+      maxSelectionsError: "Debe seleccionar máximo {max} opciones",
+      minSelectionsError: "Debe seleccionar al menos una opción",
+    },
+    en: {
+      next: "Next",
+      finish: "Finish",
+      formError: "Please correct the errors before continuing.",
+      progress: "Progress",
+      lengthError: "Field must be between {min} and {max} characters",
+      ageError: "You must be older than {age} years",
+      emailError: "You must enter a valid email with domain @{domain}",
+      selectError: "You must select an option",
+      maxSelectionsError: "You must select maximum {max} options",
+      minSelectionsError: "You must select at least one option",
+    },
+  };
+
+  const t = language === "en" ? texts.en : texts.es;
+
+  useEffect(() => {
+    if (existingFormData && existingFormData[cuestionarioActual]) {
+      setCurrentFormData(existingFormData[cuestionarioActual]);
+    } else {
+      setCurrentFormData({});
+    }
+  }, [cuestionarioActual, existingFormData]);
 
   const handleInputChange = (id: string, value: any) => {
     setFormData((prevData: any) => ({
