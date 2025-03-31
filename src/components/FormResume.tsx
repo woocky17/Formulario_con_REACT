@@ -16,24 +16,23 @@ import { Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 
-
 /**
- * 📌 Interfaz `FormItem`
- * Representa un objeto con los datos de un cuestionario.
- * - `cuestionario`: Número identificador del cuestionario.
- * - `[key: string]`: Permite almacenar preguntas con sus respuestas, que pueden ser `string`, `string[]` o `number`.
+ * @interface FormItem
+ * @description Representa un objeto con los datos de un cuestionario.
+ * @property {number} cuestionario - Número identificador del cuestionario.
+ * @property {[key: string]: string | string[] | number} [key: string] - Permite almacenar preguntas con sus respuestas, que pueden ser `string`, `string[]` o `number`.
  */
 interface FormItem {
   cuestionario: number;
   [key: string]: string | string[] | number;
 }
 
-
 /**
- * 📌 Props del componente `FormResume`
- * - `language`: Idioma seleccionado (es/en).
- * - `formData`: Array con las respuestas del usuario.
- * - `onReset`: Función para restablecer los datos del formulario.
+ * @interface Props
+ * @description Props del componente `FormResume`.
+ * @property {string} language - Idioma seleccionado (es/en).
+ * @property {FormItem[]} formData - Array con las respuestas del usuario.
+ * @property {() => void} onReset - Función para restablecer los datos del formulario.
  */
 interface Props {
   language: string;
@@ -41,14 +40,14 @@ interface Props {
   onReset: () => void;
 }
 
-
 /**
- * 📌 Componente `FormResume`
- * Muestra un resumen de las respuestas del usuario en el formulario.
- * - Carga las preguntas en el idioma seleccionado.
- * - Renderiza la información en una lista con el título del cuestionario y las respuestas.
- * - Permite reiniciar el formulario con una confirmación en un modal.
- * - Contiene botones para navegar o reiniciar los datos.
+ * @function FormResume
+ * @description Componente que muestra un resumen de las respuestas del usuario en el formulario.
+ * Carga las preguntas en el idioma seleccionado, renderiza la información en una lista con el título del cuestionario y las respuestas,
+ * permite reiniciar el formulario con una confirmación en un modal, y contiene botones para navegar o reiniciar los datos.
+ *
+ * @param {Props} props - Props del componente.
+ * @returns {JSX.Element} - El componente JSX del resumen del formulario.
  */
 const FormResume = ({ language, formData, onReset }: Props) => {
   const navigate = useNavigate();
@@ -57,16 +56,15 @@ const FormResume = ({ language, formData, onReset }: Props) => {
 
   const questions = language === "en" ? questionsEn : questionsEs;
 
-
   /**
-   * 📌 Función `getQuestion`
-   * Obtiene el texto de la pregunta a partir de su identificador.
-   * - Busca la pregunta dentro del cuestionario correspondiente.
-   * - Si no encuentra la pregunta, devuelve el ID como fallback.
-   * 
-   * @param cuestionarioIndex - Índice del cuestionario en la lista.
-   * @param questionId - Identificador de la pregunta.
-   * @returns El texto de la pregunta o el ID si no se encuentra.
+   * @function getQuestion
+   * @description Obtiene el texto de la pregunta a partir de su identificador.
+   * Busca la pregunta dentro del cuestionario correspondiente.
+   * Si no encuentra la pregunta, devuelve el ID como fallback.
+   *
+   * @param {number} cuestionarioIndex - Índice del cuestionario en la lista.
+   * @param {string} questionId - Identificador de la pregunta.
+   * @returns {string} El texto de la pregunta o el ID si no se encuentra.
    */
   const getQuestion = (cuestionarioIndex: number, questionId: string) => {
     if (!questions[cuestionarioIndex].preguntas) return questionId;
@@ -79,8 +77,8 @@ const FormResume = ({ language, formData, onReset }: Props) => {
   };
 
   /**
-   * 📌 Función `handleReset`
-   * Ejecuta la función `onReset` para restablecer los datos del formulario.
+   * @function handleReset
+   * @description Ejecuta la función `onReset` para restablecer los datos del formulario.
    */
   const handleReset = () => {
     onReset();

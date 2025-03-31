@@ -97,7 +97,7 @@ function InputTextGen({
           inputElement.validacion?.min_edad ? t("datePlaceholder") : ""
         }
       />,
-      indice
+      indice,
     );
   }
 
@@ -115,7 +115,7 @@ function InputTextGen({
         value={currentValue || null}
         placeholder={t("selectPlaceholder")}
       />,
-      indice
+      indice,
     );
   }
 
@@ -137,7 +137,7 @@ function InputTextGen({
             ))}
           </Group>
         </Checkbox.Group>,
-        indice
+        indice,
       );
     }
 
@@ -155,7 +155,7 @@ function InputTextGen({
           ))}
         </Group>
       </Radio.Group>,
-      indice
+      indice,
     );
   }
 
@@ -171,7 +171,7 @@ function InputTextGen({
         value={currentValue || ""}
         minRows={4}
       />,
-      indice
+      indice,
     );
   }
 
@@ -272,11 +272,14 @@ const JsonForm = ({
   };
 
   /**
-   * Función que maneja la validación del formulario, revisando si todas las preguntas
-   * tienen respuestas válidas y que cumplen con las restricciones especificadas.
+   * @function validateForm
+   * @description Función que maneja la validación del formulario actual.
+   * Revisa cada pregunta del formulario para asegurarse de que todas las respuestas son válidas
+   * y cumplen con las restricciones especificadas (e.g., campos obligatorios, longitud de texto, formato de email).
+   * Actualiza el estado `formErrors` con los errores encontrados y el estado `generalError` si hay errores generales.
+   *
    * @returns {boolean} - Devuelve `true` si el formulario es válido, `false` en caso contrario.
    */
-
   const validateForm = () => {
     const errors: Record<string, string> = {};
     let isValid = true;
@@ -343,7 +346,7 @@ const JsonForm = ({
             if (age < pregunta.validacion.min_edad) {
               errors[pregunta.id] = t("ageError").replace(
                 "{age}",
-                pregunta.validacion.min_edad.toString()
+                pregunta.validacion.min_edad.toString(),
               );
               isValid = false;
             }
@@ -371,7 +374,7 @@ const JsonForm = ({
         if (valor.length > pregunta.validacion.max_seleccionados) {
           errors[pregunta.id] = t("maxSelectionsError").replace(
             "{max}",
-            pregunta.validacion.max_seleccionados.toString()
+            pregunta.validacion.max_seleccionados.toString(),
           );
           isValid = false;
         }
@@ -387,8 +390,14 @@ const JsonForm = ({
     return isValid;
   };
   /**
-   * Función que maneja el envío del formulario. Valida el formulario, guarda los datos
-   * y navega a la siguiente pantalla o a la pantalla de resumen.
+   * @function handleSubmit
+   * @description Función que maneja el envío del formulario actual.
+   * Primero, valida el formulario llamando a la función `validateForm`.
+   * Si el formulario es válido, actualiza el estado global del formulario (`existingFormData`)
+   * con los datos del formulario actual y guarda los datos en `localStorage`.
+   * Finalmente, navega al siguiente cuestionario o a la página de resumen si es el último cuestionario.
+   *
+   * @throws {Error} - Si hay un error al guardar los datos del formulario.
    */
   const handleSubmit = () => {
     try {
